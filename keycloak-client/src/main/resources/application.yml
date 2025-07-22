@@ -1,0 +1,29 @@
+app:
+  title: Keycloak Desktop Client
+
+server:
+  port: 8081
+
+logging:
+  level:
+    org.springframework.security: INFO
+  pattern:
+    console: "%d{dd-MM-yyyy HH:mm:ss} %magenta([%thread]) %highlight(%-5level) %logger.%M - %msg%n"
+
+spring:
+  application:
+    name: Keycloak Desktop Client
+  security:
+    oauth2:
+      client:
+        provider:
+          kkdt:
+            issuer-uri: http://localhost:8080/realms/kkdt
+        registration:
+          kkdt:
+            provider: kkdt
+            client-name: apps
+            client-id: apps
+            client-secret: E57lksP4Xo9LfmFWXmHcVIKXF1eER0dK
+            scope: openid,offline_access,profile
+            authorization-grant-type: authorization_code

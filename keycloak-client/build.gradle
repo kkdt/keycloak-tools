@@ -28,6 +28,7 @@ dependencies {
 
     implementation platform('org.springframework.boot:spring-boot-dependencies:2.7.18')
     implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation("kkdt.generictable:swing-generictable:1.0")
 }
 
@@ -62,5 +63,5 @@ jar {
 
 application {
     // Define the main class for the application.
-    mainClass = 'kkdt.keycloak.desktop.KeycloackDesktopClientApplication'
+    mainClass = 'kkdt.keycloak.desktop.KeycloakDesktopClientApplication'
 }

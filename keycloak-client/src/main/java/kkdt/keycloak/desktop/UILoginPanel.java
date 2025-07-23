@@ -24,7 +24,8 @@ import java.util.function.Consumer;
  * User and authentication information panel.
  */
 public class UILoginPanel extends JPanel {
-    private static final Logger log = LoggerFactory.getLogger(UILoginPanel.class);
+    private static final Logger logger = LoggerFactory.getLogger(UILoginPanel.class);
+
     private JTextField username = new JTextField(30);
     private JTextField name = new JTextField(30);
     private JTextField email = new JTextField(30);
@@ -33,7 +34,10 @@ public class UILoginPanel extends JPanel {
     private JTextField issueTime = new JTextField(30);
     private JTextField expireTime = new JTextField(30);
     private JTextField issuer = new JTextField(30);
-    private JButton refreshButton;
+    private JTextField clientId = new JTextField(30);
+    private JTextField source = new JTextField(30);
+    private JButton clientButton = new JButton("Client");
+    private JButton userButton = new JButton("User");
 
     public UILoginPanel() {
         setLayout(new BorderLayout());
@@ -48,15 +52,18 @@ public class UILoginPanel extends JPanel {
         issueTime.setEditable(false);
         expireTime.setEditable(false);
         issuer.setEditable(false);
+        clientId.setEditable(false);
+        source.setEditable(false);
 
-        refreshButton = new JButton("Refresh");
-        refreshButton.setSize(new Dimension(150, 30));
+        userButton.setSize(new Dimension(150, 30));
+        clientButton.setSize(new Dimension(150, 30));
 
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(5, 5, 5, 5);
 
         JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        controls.add(refreshButton);
+        controls.add(clientButton);
+        controls.add(userButton);
 
         JPanel userInfo = userInfoPanel();
         JPanel auth = authenticationPanel();
@@ -68,7 +75,8 @@ public class UILoginPanel extends JPanel {
 
     public UILoginPanel withLoginController(LoginController actionListener) {
         if(actionListener != null) {
-            this.refreshButton.addActionListener(actionListener);
+            this.clientButton.addActionListener(actionListener);
+            this.userButton.addActionListener(actionListener);
             actionListener.setAuthenticatedUser(authenticatedUser());
         }
         return this;
@@ -77,6 +85,10 @@ public class UILoginPanel extends JPanel {
     public Consumer<UserInfo> authenticatedUser() {
         return data -> {
             EventQueue.invokeLater(() -> {
+                String _token = token.getText();
+                logger.info("Current token {} new token",
+                    _token.equals(data.getToken()) ? "is the same as" : "is different than the");
+
                 username.setText(data.getUsername());
                 email.setText(data.getEmail());
                 name.setText(data.getName());
@@ -85,6 +97,8 @@ public class UILoginPanel extends JPanel {
                 issueTime.setText(data.getIssuedAt().toString());
                 expireTime.setText(data.getExpiresAt().toString());
                 issuer.setText(data.getIssuer().toString());
+                clientId.setText(data.getAuthorizedParty());
+                source.setText(data.getSource());
             });
         };
     }
@@ -131,6 +145,24 @@ public class UILoginPanel extends JPanel {
         c.gridy = 3;
         c.fill = GridBagConstraints.HORIZONTAL;
         panel.add(issuer, c);
+
+        c.gridx = 0;
+        c.gridy = 4;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(new JLabel("Source", SwingConstants.LEFT), c);
+        c.gridx = 1;
+        c.gridy = 4;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(source, c);
+
+        c.gridx = 0;
+        c.gridy = 5;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(new JLabel("Client ID", SwingConstants.LEFT), c);
+        c.gridx = 1;
+        c.gridy = 5;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(clientId, c);
 
         return panel;
     }

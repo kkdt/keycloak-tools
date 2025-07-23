@@ -8,7 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 
 import javax.swing.JFrame;
 
@@ -21,6 +22,21 @@ public class GUIConfiguration {
     @Value("${app.realm}")
     private String realm;
 
+    @Value("${app.keycloak.issuer}")
+    private String keyloakUrl;
+
+    @Value("${app.keycloak.client-id}")
+    private String clientId;
+
+    @Value("${app.keycloak.client-secret}")
+    private String clientSecret;
+
+    @Autowired
+    private OAuth2AuthorizedClientService authorizedClientService;
+
+    @Autowired
+    private OAuth2AuthorizedClientManager authorizedClientManager;
+
     @Bean
     public UILoginPanel loginPanel(@Autowired LoginController loginController) {
         return new UILoginPanel()
@@ -28,8 +44,11 @@ public class GUIConfiguration {
     }
 
     @Bean
-    public KeycloakAccessTokenService keycloakAccessTokenService(@Autowired WebClient webClient) {
-        return new KeycloakAccessTokenService(webClient, realm);
+    public KeycloakAccessTokenService keycloakAccessTokenService(@Autowired OAuth2AuthorizedClientManager authorizedClientManager,
+        @Autowired OAuth2AuthorizedClientService authorizedClientService)
+    {
+        return new KeycloakAccessTokenService(authorizedClientManager, authorizedClientService,
+            realm, keyloakUrl, clientId, clientSecret);
     }
 
     @Bean

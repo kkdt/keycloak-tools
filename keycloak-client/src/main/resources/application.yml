@@ -4,6 +4,8 @@ app:
   keycloak:
     issuer: http://localhost:8080/realms/kkdt
     token: http://localhost:8080/realms/kkdt/protocol/openid-connect/token
+    client-id: apps
+    client-secret: E57lksP4Xo9LfmFWXmHcVIKXF1eER0dK
 
 server:
   port: 8081
@@ -31,4 +33,18 @@ spring:
             client-id: apps
             client-secret: E57lksP4Xo9LfmFWXmHcVIKXF1eER0dK
             scope: openid,offline_access,profile
+            # authorization_code: This is the recommended and most secure grant type for public and confidential clients,
+            #    especially for web applications. It involves a redirection to Keycloak for user authentication, after
+            #    which Keycloak issues an authorization code back to your application. Your application then exchanges
+            #    this code for an access token at Keycloak's token endpoint. This is the default and preferred flow for
+            #    user-facing applications.
+            # client_credentials: This grant type is used for machine-to-machine communication where a client application
+            #    needs to access resources without a specific user context. The client authenticates directly with Keycloak
+            #    using its client ID and client secret, and Keycloak issues an access token representing the client itself.
+            #    This is suitable for backend services or daemon applications.
+            # password: While technically supported by OAuth 2.0, the password grant type (Resource Owner Password Credentials)
+            #    is generally discouraged due to security concerns. It involves the client application directly handling
+            #    the user's username and password, which can be a security risk. This grant type is often removed or restricted
+            #    in modern OAuth 2.1 implementations and should be used with extreme caution and only in specific, controlled
+            #    environments.
             authorization-grant-type: authorization_code

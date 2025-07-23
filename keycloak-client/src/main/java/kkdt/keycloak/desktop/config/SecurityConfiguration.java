@@ -3,9 +3,11 @@ package kkdt.keycloak.desktop.config;
 import kkdt.keycloak.desktop.security.AuthenticationPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
@@ -16,11 +18,21 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class SecurityConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfiguration.class);
 
+    @Autowired
+    private OAuth2AuthorizedClientService authorizedClientService;
+
     @Bean
     public AuthenticationPublisher authenticationPublisher() {
         return new AuthenticationPublisher();
     }
 
+    /**
+     * TODO - Experimenting and exposing {@link OAuth2AuthorizedClientManager} to see what it does.
+     *
+     * @param clientRegistrationRepository
+     * @param authorizedClientRepository
+     * @return
+     */
     @Bean
     public OAuth2AuthorizedClientManager authorizedClientManager(ClientRegistrationRepository clientRegistrationRepository,
          OAuth2AuthorizedClientRepository authorizedClientRepository)
@@ -35,8 +47,14 @@ public class SecurityConfiguration {
         return authorizedClientManager;
     }
 
+    /**
+     * TODO - Experimenting and exposing {@link WebClient} to see what it does.
+     *
+     * @param authorizedClientManager
+     * @return
+     */
     @Bean
-    WebClient webClient(OAuth2AuthorizedClientManager authorizedClientManager) {
+    public WebClient webClient(OAuth2AuthorizedClientManager authorizedClientManager) {
         logger.info("Configuring web client using {}", authorizedClientManager);
 
         ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2Client =

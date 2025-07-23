@@ -16,8 +16,8 @@ public class AuthenticationPublisher implements ApplicationContextAware {
         this.applicationContext = applicationContext;
     }
 
-    public void publishAuthentication(Authentication authentication, String url) {
-        AuthenticationEvent event = new AuthenticationEvent(this, authentication, url);
+    public void publishAuthentication(String source, Authentication authentication, String url) {
+        AuthenticationEvent event = new AuthenticationEvent(source, authentication, url);
         applicationContext.publishEvent(event);
     }
 }

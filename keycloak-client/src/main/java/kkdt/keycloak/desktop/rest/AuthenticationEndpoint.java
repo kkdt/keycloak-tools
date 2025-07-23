@@ -21,7 +21,7 @@ public class AuthenticationEndpoint {
     public ResponseEntity<Authentication> authentication() {
         String url = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        authenticationPublisher.publishAuthentication(authentication, url);
+        authenticationPublisher.publishAuthentication(AuthenticationEndpoint.class.getSimpleName(), authentication, url);
         return ResponseEntity.ok(authentication);
     }
 }

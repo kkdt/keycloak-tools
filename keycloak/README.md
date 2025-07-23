@@ -38,6 +38,7 @@ Create realm `kkdt`
 - Create client `apps` - Client ID and Name
 - Enable "Client Authentication" and check all "Authentication Flow"
 - Add Web Origins: `/*`
+- Add "Valid redirect URIs" to `*` (development only)
 - Note "Client Secret" from Credentials tab
 
 [//]: Links

@@ -1,5 +1,9 @@
 app:
   title: Keycloak Desktop Client
+  realm: kkdt
+  keycloak:
+    issuer: http://localhost:8080/realms/kkdt
+    token: http://localhost:8080/realms/kkdt/protocol/openid-connect/token
 
 server:
   port: 8081
@@ -19,6 +23,7 @@ spring:
         provider:
           kkdt:
             issuer-uri: http://localhost:8080/realms/kkdt
+            token-uri: http://localhost:8080/realms/kkdt/protocol/openid-connect/token
         registration:
           kkdt:
             provider: kkdt

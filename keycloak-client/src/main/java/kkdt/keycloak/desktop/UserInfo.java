@@ -1,42 +1,98 @@
 package kkdt.keycloak.desktop;
 
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import java.awt.EventQueue;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
+
+import java.net.URL;
+import java.time.Instant;
 
 public class UserInfo {
-    private JTextField username;
-    private JPasswordField password;
+    private OidcUserAuthority authority;
 
-    public UserInfo with(JTextField username, JPasswordField password) {
-        this.username = username;
-        this.password = password;
-        return this;
+    public UserInfo() {}
+
+    public UserInfo(OidcUserAuthority authority) {
+        this.authority = authority;
     }
 
     public String getUsername() {
-        return username.getText().trim();
+        String value = "";
+        if (authority != null) {
+            value = authority.getUserInfo().getPreferredUsername();
+        }
+        return value;
     }
 
-    public char[] getPassword() {
-        return password.getPassword();
+    public String getEmail() {
+        String value = "";
+        if (authority != null) {
+            value = authority.getUserInfo().getEmail();
+        }
+        return value;
     }
 
-    public void disable() {
-        this.username.setEditable(false);
-        this.username.setEnabled(false);
-        this.password.setEditable(false);
-        this.password.setEnabled(false);
+    public String getSubject() {
+        String value = "";
+        if (authority != null) {
+            value = authority.getUserInfo().getSubject();
+        }
+        return value;
     }
 
-    public void enable() {
-        this.username.setEditable(true);
-        this.username.setEnabled(true);
-        this.password.setEditable(true);
-        this.password.setEnabled(true);
-        EventQueue.invokeLater(() -> {
-            this.username.setText("");
-            this.password.setText("");
-        });
+    public String getName() {
+        String value = "";
+        if (authority != null) {
+            value = authority.getUserInfo().getFullName();
+        }
+        return value;
+    }
+
+    public String getToken() {
+        String value = "";
+        if (authority != null) {
+            value = authority.getIdToken().getTokenValue();
+        }
+        return value;
+    }
+
+    public Instant getIssuedAt() {
+        Instant value = null;
+        if (authority != null) {
+            value = authority.getIdToken().getIssuedAt();
+        }
+        return value;
+    }
+
+    public Instant getExpiresAt() {
+        Instant value = null;
+        if (authority != null) {
+            value = authority.getIdToken().getExpiresAt();
+        }
+        return value;
+    }
+
+    public URL getIssuer() {
+        URL value = null;
+        if (authority != null) {
+            value = authority.getIdToken().getIssuer();
+        }
+        return value;
+    }
+
+    public OidcUserInfo getUserInfo() {
+        OidcUserInfo info = null;
+        if (authority != null) {
+            info = authority.getUserInfo();
+        }
+        return info;
+    }
+
+    public OidcIdToken getIdToken() {
+        OidcIdToken idToken = null;
+        if(authority != null) {
+            idToken = authority.getIdToken();
+        }
+        return idToken;
     }
 }

@@ -4,82 +4,178 @@ import kkdt.keycloak.desktop.controller.LoginController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.function.Supplier;
+import java.util.function.Consumer;
 
 /**
- * Username / password panel with controls to login and logout.
+ * User and authentication information panel.
  */
 public class UILoginPanel extends JPanel {
     private static final Logger log = LoggerFactory.getLogger(UILoginPanel.class);
-    private JTextField username;
-    private JPasswordField password;
-    private JButton loginButton;
-    private JButton logoutButton;
-
+    private JTextField username = new JTextField(30);
+    private JTextField name = new JTextField(30);
+    private JTextField email = new JTextField(30);
+    private JTextField subject = new JTextField(30);
+    private JTextArea token = new JTextArea(25, 30);
+    private JTextField issueTime = new JTextField(30);
+    private JTextField expireTime = new JTextField(30);
+    private JTextField issuer = new JTextField(30);
+    private JButton refreshButton;
 
     public UILoginPanel() {
-        setLayout(new GridBagLayout());
+        setLayout(new BorderLayout());
         setMinimumSize(new Dimension(250, 250));
 
-        username = new JTextField("Username", 30);
-        password = new JPasswordField("Password", 30);
-        loginButton = new JButton("Login");
-        loginButton.setSize(new Dimension(150, 30));
-        logoutButton = new JButton("Logout");
-        logoutButton.setSize(new Dimension(150, 30));
+        username.setEditable(false);
+        name.setEditable(false);
+        email.setEditable(false);
+        subject.setEditable(false);
+        token.setEditable(false);
+        token.setLineWrap(true);
+        issueTime.setEditable(false);
+        expireTime.setEditable(false);
+        issuer.setEditable(false);
+
+        refreshButton = new JButton("Refresh");
+        refreshButton.setSize(new Dimension(150, 30));
 
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(5, 5, 5, 5);
 
         JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        controls.add(logoutButton);
-        controls.add(loginButton);
+        controls.add(refreshButton);
 
-        c.gridx = 0;
-        c.gridy = 0;
-        c.fill = GridBagConstraints.NONE;
-        add(new JLabel("Username"), c);
-        c.gridx = 1;
-        c.gridy = 0;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        add(username, c);
+        JPanel userInfo = userInfoPanel();
+        JPanel auth = authenticationPanel();
 
-        c.gridx = 0;
-        c.gridy = 1;
-        c.fill = GridBagConstraints.NONE;
-        add(new JLabel("Password"), c);
-        c.gridx = 1;
-        c.gridy = 1;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        add(password, c);
-
-        c.gridx = 1;
-        c.gridy = 2;
-        c.gridwidth = 2;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        add(controls, c);
+        add(userInfo, BorderLayout.NORTH);
+        add(auth, BorderLayout.CENTER);
+        add(controls, BorderLayout.SOUTH);
     }
 
     public UILoginPanel withLoginController(LoginController actionListener) {
         if(actionListener != null) {
-            this.loginButton.addActionListener(actionListener);
-            this.logoutButton.addActionListener(actionListener);
-            actionListener.setUserInfo(userInfo());
+            this.refreshButton.addActionListener(actionListener);
+            actionListener.setAuthenticatedUser(authenticatedUser());
         }
         return this;
     }
 
-    private Supplier<UserInfo> userInfo() {
-        return () ->  new UserInfo().with(username, password);
+    public Consumer<UserInfo> authenticatedUser() {
+        return data -> {
+            EventQueue.invokeLater(() -> {
+                username.setText(data.getUsername());
+                email.setText(data.getEmail());
+                name.setText(data.getName());
+                subject.setText(data.getSubject());
+                token.setText(data.getToken());
+                issueTime.setText(data.getIssuedAt().toString());
+                expireTime.setText(data.getExpiresAt().toString());
+                issuer.setText(data.getIssuer().toString());
+            });
+        };
+    }
+
+    private JPanel authenticationPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(BorderFactory.createTitledBorder("Authentication"));
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(5, 5, 5, 5);
+
+        c.gridx = 0;
+        c.gridy = 0;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(new JLabel("Token", SwingConstants.LEFT), c);
+        c.gridx = 1;
+        c.gridy = 0;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(token, c);
+
+        c.gridx = 0;
+        c.gridy = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(new JLabel("Issued", SwingConstants.LEFT), c);
+        c.gridx = 1;
+        c.gridy = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(issueTime, c);
+
+        c.gridx = 0;
+        c.gridy = 2;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(new JLabel("Expire", SwingConstants.LEFT), c);
+        c.gridx = 1;
+        c.gridy = 2;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(expireTime, c);
+
+        c.gridx = 0;
+        c.gridy = 3;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(new JLabel("Issuer", SwingConstants.LEFT), c);
+        c.gridx = 1;
+        c.gridy = 3;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(issuer, c);
+
+        return panel;
+    }
+
+    private JPanel userInfoPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(5, 5, 5, 5);
+
+        c.gridx = 0;
+        c.gridy = 0;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(new JLabel("Username", SwingConstants.LEFT), c);
+        c.gridx = 1;
+        c.gridy = 0;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(username, c);
+
+        c.gridx = 0;
+        c.gridy = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(new JLabel("Name", SwingConstants.LEFT), c);
+        c.gridx = 1;
+        c.gridy = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(name, c);
+
+        c.gridx = 0;
+        c.gridy = 2;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(new JLabel("Email", SwingConstants.LEFT), c);
+        c.gridx = 1;
+        c.gridy = 2;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(email, c);
+
+        c.gridx = 0;
+        c.gridy = 3;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(new JLabel("Subject", SwingConstants.LEFT), c);
+        c.gridx = 1;
+        c.gridy = 3;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(subject, c);
+
+        return panel;
     }
 }

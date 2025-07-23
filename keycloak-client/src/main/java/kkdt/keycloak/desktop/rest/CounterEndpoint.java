@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +29,13 @@ public class CounterEndpoint {
     }
 
     private void logRequestUser() {
-        OAuth2User user = ((OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        logger.info("User info: {}", user.getName());
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        OAuth2User user = (OAuth2User) authentication.getPrincipal();
+
+        logger.info("Security Context: {}, Authentication: {}, User info: {}",
+            securityContext.getClass().getName(),
+            authentication.getClass().getName(),
+            user.getName());
     }
 }

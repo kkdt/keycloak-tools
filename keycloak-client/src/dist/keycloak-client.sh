@@ -8,13 +8,14 @@ function help() {
   echo "  --debug-suspend           Suspend debug to wait for debugger to be attached"
   echo "  --socks5 <host> <port>    SOCKS5 proxy, default localhost / 8001"
   echo "  --profile <profile>       Run the application in the specified profile configuration"
-
+  echo "  --ssl                     Enable SSL, default disabled"
 }
 
 __debug_suspend="n"
 __debug_port=9000
 __socks5_options=""
 __profile=""
+__ssl="-Dserver.ssl.enabled=false"
 
 while [ "$1" != "" ]; do
   case "$1" in
@@ -40,6 +41,10 @@ while [ "$1" != "" ]; do
     __profile="-Dspring.profiles.active=${1}"
     ;;
 
+  --ssl)
+    __ssl="-Dserver.ssl.enabled=true"
+    ;;
+
   h|-h|--h|help|-help|--help)
     help
     exit 0
@@ -54,7 +59,8 @@ while [ "$1" != "" ]; do
   shift
 done
 
-export JAVA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,address=${__debug_port},suspend=${__debug_suspend} ${__socks5_options} ${__profile}"
+export JAVA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,address=${__debug_port},suspend=${__debug_suspend} ${__socks5_options} ${__profile} ${__ssl}"
 export KEYCLOAK_CLIENT_OPTS=""
+export APPHOME=${__directory}
 
 ${__directory}/bin/keycloak-client

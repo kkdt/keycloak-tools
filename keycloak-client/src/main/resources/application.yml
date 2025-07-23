@@ -9,6 +9,15 @@ app:
 
 server:
   port: 8081
+  ssl:
+    key-store: file://${APPHOME}/keystores/keycloak-client.p12
+    key-store-password: password
+    key-store-type: pkcs12
+    key-alias: keycloak-client
+    key-password: password
+    trust-store: file://${APPHOME}/keystores/truststore.jks
+    trust-store-password: password
+    trust-store-type: JKS
 
 logging:
   level:

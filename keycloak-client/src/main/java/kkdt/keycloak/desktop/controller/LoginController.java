@@ -53,8 +53,9 @@ public class LoginController implements ActionListener, ApplicationListener<Auth
                 authorities.stream().filter(a -> a instanceof OidcUserAuthority)
                     .findFirst()
                     .map(oidc -> {
+                        OidcUserAuthority oidcAuth = (OidcUserAuthority)oidc;
                         UserInfo info = new UserInfo(authentication);
-                        info.setAuthority((OidcUserAuthority)oidc);
+                        info.setAuthority(oidcAuth);
                         info.setSource(source.toString());
                         return info;
                     })

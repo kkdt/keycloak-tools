@@ -1,10 +1,10 @@
 package kkdt.keycloak.desktop.security;
 
-import kkdt.keycloak.desktop.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -41,7 +41,7 @@ public class KeycloakAccessTokenService {
         return webClient.post()
             .uri("/protocol/openid-connect/token")
             .header("Content-Type", "application/x-www-form-urlencoded")
-            .body(BodyInserters.fromFormData("grant_type", "client_credentials")
+            .body(BodyInserters.fromFormData("grant_type", AuthorizationGrantType.CLIENT_CREDENTIALS.getValue())
                 .with("client_id", clientId)
                 .with("client_secret", clientSecret)
                 .with("scope", "openid"))
@@ -50,17 +50,17 @@ public class KeycloakAccessTokenService {
             .block();
     }
 
-    public String getUserCredentials(UserInfo userInfo, char[] password) {
+    public String getUserCredentials(String username, char[] password) {
         WebClient webClient = WebClient.builder()
             .baseUrl(keycloakUrl)
             .build();
         return webClient.post()
             .uri("/protocol/openid-connect/token")
             .header("Content-Type", "application/x-www-form-urlencoded")
-            .body(BodyInserters.fromFormData("grant_type", "password")
+            .body(BodyInserters.fromFormData("grant_type", AuthorizationGrantType.PASSWORD.getValue())
                 .with("client_id", clientId)
                 .with("client_secret", clientSecret)
-                .with("username", userInfo.getUsername())
+                .with("username", username)
                 .with("password", new String(password))
                 .with("scope", "openid"))
             .retrieve()

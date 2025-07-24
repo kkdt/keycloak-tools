@@ -36,8 +36,8 @@ public class UILoginPanel extends JPanel {
     private JTextField issuer = new JTextField(30);
     private JTextField clientId = new JTextField(30);
     private JTextField source = new JTextField(30);
-    private JButton clientButton = new JButton("Client");
-    private JButton userButton = new JButton("User");
+    private JButton clientButton = new JButton("Client ID");
+    private JButton passwordButton = new JButton("Password");
 
     public UILoginPanel() {
         setLayout(new BorderLayout());
@@ -55,15 +55,17 @@ public class UILoginPanel extends JPanel {
         clientId.setEditable(false);
         source.setEditable(false);
 
-        userButton.setSize(new Dimension(150, 30));
-        clientButton.setSize(new Dimension(150, 30));
+        clientButton.setSize(new Dimension(175, 30));
+        clientButton.setToolTipText("Login using the 'client_credentials' grant type (service to service)");
+        passwordButton.setSize(new Dimension(175, 30));
+        passwordButton.setToolTipText("Login using the 'password' grant type (user login)");
 
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(5, 5, 5, 5);
 
         JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        controls.add(passwordButton);
         controls.add(clientButton);
-        controls.add(userButton);
 
         JPanel userInfo = userInfoPanel();
         JPanel auth = authenticationPanel();
@@ -75,8 +77,8 @@ public class UILoginPanel extends JPanel {
 
     public UILoginPanel withLoginController(LoginController actionListener) {
         if(actionListener != null) {
+            this.passwordButton.addActionListener(actionListener);
             this.clientButton.addActionListener(actionListener);
-            this.userButton.addActionListener(actionListener);
             actionListener.setAuthenticatedUser(authenticatedUser());
         }
         return this;

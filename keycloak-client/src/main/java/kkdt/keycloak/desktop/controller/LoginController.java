@@ -12,10 +12,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
@@ -60,6 +64,11 @@ public class LoginController implements ActionListener, ApplicationListener<Auth
                         authenticatedUser.accept(user);
                     });
             }
+
+            JOptionPane.showMessageDialog(null,
+                String.format("Logged in as: %s", currentUserInfo.getUsername()),
+                "Browser Authentication",
+                JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -67,7 +76,7 @@ public class LoginController implements ActionListener, ApplicationListener<Auth
     public void actionPerformed(ActionEvent actionEvent) {
         try {
             switch (actionEvent.getActionCommand()) {
-                case "Client":
+                case "Client ID":
                     logger.info("Logging into keycloak and refreshing token, User: {}, Token: {}",
                         currentUserInfo,
                         keycloakAccessTokenService);
@@ -75,8 +84,8 @@ public class LoginController implements ActionListener, ApplicationListener<Auth
                     logger.info("Client credentials: {}", clientCredentials);
                     displayResponse(clientCredentials, "Client Credentials");
                     break;
-                case "User":
-                    handleUserAction();
+                case "Password":
+                    handleUserPasswordAction();
                     break;
             }
         } catch (Exception e) {
@@ -95,25 +104,27 @@ public class LoginController implements ActionListener, ApplicationListener<Auth
         logger.info("Authority {}: {}", authority.getClass().getName(), authority);
     }
 
-    private void handleUserAction() throws JsonProcessingException {
-        if(currentUserInfo == null) {
-            JOptionPane.showMessageDialog(null,
-                "Please perform the initial login on the browser",
-                "Unauthenticated",
-                JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+    private void handleUserPasswordAction() throws JsonProcessingException {
+        JLabel label1 = new JLabel("Username");
+        JLabel label2 = new JLabel("Password");
+        JTextField input1 = new JTextField(20);
+        JPasswordField password = new JPasswordField(20);
 
-        JPasswordField password = new JPasswordField();
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panel.add(label1);
+        panel.add(input1);
+        panel.add(label2);
+        panel.add(password);
+
         int confirm = JOptionPane.showConfirmDialog(
             null,
-            password,
-            String.format("Enter Password %s", currentUserInfo.getUsername()),
+            panel,
+            "User Authentication",
             JOptionPane.OK_CANCEL_OPTION,
             JOptionPane.PLAIN_MESSAGE);
         if (confirm == JOptionPane.OK_OPTION) {
             char[] _input = password.getPassword();
-            String userCredentials = keycloakAccessTokenService.getUserCredentials(currentUserInfo, _input);
+            String userCredentials = keycloakAccessTokenService.getUserCredentials(input1.getText(), _input);
             logger.info("User credentials: {}", userCredentials);
             displayResponse(userCredentials, "User Credentials");
         }
@@ -136,11 +147,9 @@ public class LoginController implements ActionListener, ApplicationListener<Auth
         area.setText(json);
         logger.info(String.format("JSON Response: \n    %s", json));
 
-        JOptionPane.showConfirmDialog(
-            null,
+        JOptionPane.showMessageDialog(null,
             scrollPane,
             title,
-            JOptionPane.OK_CANCEL_OPTION,
-            JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.INFORMATION_MESSAGE);
     }
 }

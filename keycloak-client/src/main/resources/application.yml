@@ -1,11 +1,11 @@
 app:
   title: Keycloak Desktop Client
-  realm: kkdt
+  realm: demo
   keycloak:
-    issuer: http://localhost:8080/realms/kkdt
-    token: http://localhost:8080/realms/kkdt/protocol/openid-connect/token
+    issuer: http://localhost:8080/realms/demo
+    token: http://localhost:8080/realms/demo/protocol/openid-connect/token
     client-id: apps
-    client-secret: E57lksP4Xo9LfmFWXmHcVIKXF1eER0dK
+    client-secret: lwvlNPPRptNUSzRDzjs9zEsotxBOBQaN
 
 server:
   port: 8081
@@ -32,15 +32,15 @@ spring:
     oauth2:
       client:
         provider:
-          kkdt:
-            issuer-uri: http://localhost:8080/realms/kkdt
-            token-uri: http://localhost:8080/realms/kkdt/protocol/openid-connect/token
+          demo:
+            issuer-uri: http://localhost:8080/realms/demo
+            token-uri: http://localhost:8080/realms/demo/protocol/openid-connect/token
         registration:
-          kkdt:
-            provider: kkdt
+          demo:
+            provider: demo
             client-name: apps
             client-id: apps
-            client-secret: E57lksP4Xo9LfmFWXmHcVIKXF1eER0dK
+            client-secret: lwvlNPPRptNUSzRDzjs9zEsotxBOBQaN
             scope: openid,offline_access,profile
             # authorization_code: This is the recommended and most secure grant type for public and confidential clients,
             #    especially for web applications. It involves a redirection to Keycloak for user authentication, after

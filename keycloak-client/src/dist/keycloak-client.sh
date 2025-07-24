@@ -17,6 +17,9 @@ __socks5_options=""
 __profile=""
 __ssl="-Dserver.ssl.enabled=false"
 
+export KEYCLOAK_CLIENT_OPTS=""
+export APPHOME=${__directory}
+
 while [ "$1" != "" ]; do
   case "$1" in
   --debug-suspend)
@@ -43,6 +46,8 @@ while [ "$1" != "" ]; do
 
   --ssl)
     __ssl="-Dserver.ssl.enabled=true"
+    __ssl="${__ssl} -Djavax.net.ssl.keyStore=${APPHOME}/keystores/keycloak-client.p12 -Djavax.net.ssl.keyStorePassword=oassword -Djavax.net.ssl.keyStoreType=pcks12"
+    __ssl="${__ssl} -Djavax.net.ssl.trustStore=${APPHOME}/keystores/truststore.jks -Djavax.net.ssl.trustStorePassword=password -Djavax.net.ssl.trustStoreType=jks"
     ;;
 
   h|-h|--h|help|-help|--help)
@@ -60,7 +65,5 @@ while [ "$1" != "" ]; do
 done
 
 export JAVA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,address=${__debug_port},suspend=${__debug_suspend} ${__socks5_options} ${__profile} ${__ssl}"
-export KEYCLOAK_CLIENT_OPTS=""
-export APPHOME=${__directory}
 
 ${__directory}/bin/keycloak-client

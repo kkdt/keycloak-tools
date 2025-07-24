@@ -26,7 +26,7 @@ podman kube play pod.yml --down
 
 ## 2.1 Create Realm
 
-Create realm `kkdt`
+Create realm `demo`
 
 ## 2.2 Create User
 
@@ -37,8 +37,8 @@ Create realm `kkdt`
 
 - Create client `apps` - Client ID and Name
 - Enable "Client Authentication" and check all "Authentication Flow"
-- Add Web Origins: `/*`
 - Add "Valid redirect URIs" to `*` (development only)
+- Add Web Origins: `/*`
 - Note "Client Secret" from Credentials tab
 
 [//]: Links

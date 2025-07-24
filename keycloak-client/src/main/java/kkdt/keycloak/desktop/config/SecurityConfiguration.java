@@ -6,15 +6,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfiguration.class);
 
@@ -62,5 +68,31 @@ public class SecurityConfiguration {
         return WebClient.builder()
             .apply(oauth2Client.oauth2Configuration())
             .build();
+    }
+
+    @Bean
+    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
+        http
+            .oauth2Client()
+            .and()
+            .oauth2Login()
+            .tokenEndpoint()
+            .and()
+            .userInfoEndpoint();
+        http
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
+
+        http
+            .authorizeHttpRequests()
+            .requestMatchers(new AntPathRequestMatcher("/oauth2/**")).permitAll()
+            .requestMatchers(new AntPathRequestMatcher("/login/**")).permitAll()
+            .requestMatchers(new AntPathRequestMatcher("/unauthenticated")).permitAll()
+            .anyRequest().authenticated()
+            .and()
+            .logout();
+//            .logoutSuccessUrl("http://localhost:8080/realms/external/protocol/openid-connect/logout?redirect_uri=http://localhost:8081/");
+
+        return http.build();
     }
 }

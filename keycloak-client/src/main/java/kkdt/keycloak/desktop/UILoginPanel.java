@@ -38,6 +38,7 @@ public class UILoginPanel extends JPanel {
     private JTextField source = new JTextField(30);
     private JButton clientButton = new JButton("Client ID");
     private JButton passwordButton = new JButton("Password");
+    private JButton counterButton = new JButton("Counter");
 
     public UILoginPanel() {
         setLayout(new BorderLayout());
@@ -59,11 +60,14 @@ public class UILoginPanel extends JPanel {
         clientButton.setToolTipText("Login using the 'client_credentials' grant type (service to service)");
         passwordButton.setSize(new Dimension(175, 30));
         passwordButton.setToolTipText("Login using the 'password' grant type (user login)");
+        counterButton.setSize(new Dimension(175, 30));
+        counterButton.setToolTipText("Invoke the '/api/counter' API call");
 
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(5, 5, 5, 5);
 
         JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        controls.add(counterButton);
         controls.add(passwordButton);
         controls.add(clientButton);
 
@@ -79,6 +83,7 @@ public class UILoginPanel extends JPanel {
         if(actionListener != null) {
             this.passwordButton.addActionListener(actionListener);
             this.clientButton.addActionListener(actionListener);
+            this.counterButton.addActionListener(actionListener);
             actionListener.setAuthenticatedUser(authenticatedUser());
         }
         return this;

@@ -1,0 +1,55 @@
+// 1. OIDC Client Configuration (e.g., using a library or manual setup)
+//    - Configure client ID, redirect URI, authorization endpoint, token endpoint, etc.
+
+// 2. Swing UI for User Login
+//    - Button to initiate OIDC login (opens browser)
+//    - Listener for the local callback URL (to receive authorization code)
+
+// 3. Token Service
+public class TokenService {
+    private String accessToken;
+    private String refreshToken;
+    // ... methods to handle token acquisition, refresh, and storage
+}
+
+// 4. RestTemplate Configuration
+public class OidcRestTemplateConfig {
+
+    public RestTemplate oidcRestTemplate(TokenService tokenService) {
+        RestTemplate restTemplate = new RestTemplate();
+        List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
+        interceptors.add(new OidcAuthInterceptor(tokenService)); // Custom interceptor
+        restTemplate.setInterceptors(interceptors);
+        return restTemplate;
+    }
+}
+
+// 5. Custom Interceptor
+public class OidcAuthInterceptor implements ClientHttpRequestInterceptor {
+    private final TokenService tokenService;
+
+    public OidcAuthInterceptor(TokenService tokenService) {
+        this.tokenService = tokenService;
+    }
+
+    @Override
+    public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
+        String accessToken = tokenService.getAccessToken(); // Get token from service
+        if (accessToken != null) {
+            request.getHeaders().add("Authorization", "Bearer " + accessToken);
+        }
+        return execution.execute(request, body);
+    }
+}
+
+// 6. Using the RestTemplate in your Swing application
+public class MySwingApp {
+    private RestTemplate secureRestTemplate;
+    private TokenService tokenService;
+
+    public MySwingApp() {
+        tokenService = new TokenService(); // Initialize token service
+        secureRestTemplate = new OidcRestTemplateConfig().oidcRestTemplate(tokenService);
+        // ... use secureRestTemplate to make requests to protected resources
+    }
+}

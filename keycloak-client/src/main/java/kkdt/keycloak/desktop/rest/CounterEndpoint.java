@@ -20,7 +20,7 @@ public class CounterEndpoint {
     private static final Logger logger = LoggerFactory.getLogger(CounterEndpoint.class);
     private static final AtomicInteger counter = new AtomicInteger(0);
 
-    @RequestMapping(value = "/counter", method = { RequestMethod.GET }, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/api/counter", method = { RequestMethod.GET }, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Counter> counter() {
         logRequestUser();
         Counter results = new Counter()
@@ -31,11 +31,15 @@ public class CounterEndpoint {
     private void logRequestUser() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
-        OAuth2User user = (OAuth2User) authentication.getPrincipal();
+        if(authentication.getPrincipal() instanceof OAuth2User) {
+            OAuth2User user = (OAuth2User) authentication.getPrincipal();
+            logger.info("Security Context: {}, Authentication: {}, User info: {}",
+                securityContext.getClass().getName(),
+                authentication.getClass().getName(),
+                user.getName());
+        } else {
+            logger.info("Received authorization {}", authentication);
+        }
 
-        logger.info("Security Context: {}, Authentication: {}, User info: {}",
-            securityContext.getClass().getName(),
-            authentication.getClass().getName(),
-            user.getName());
     }
 }

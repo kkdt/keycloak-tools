@@ -1,9 +1,11 @@
 app:
+  host: localhost
   title: Keycloak Desktop Client
   realm: demo
   keycloak:
     issuer: http://localhost:8080/realms/demo
     token: http://localhost:8080/realms/demo/protocol/openid-connect/token
+    jwk: http://localhost:8080/realms/demo/protocol/openid-connect/certs
     client-id: apps
     client-secret: lwvlNPPRptNUSzRDzjs9zEsotxBOBQaN
 
@@ -35,6 +37,7 @@ spring:
           demo:
             issuer-uri: http://localhost:8080/realms/demo
             token-uri: http://localhost:8080/realms/demo/protocol/openid-connect/token
+            jwk-set-uri: http://localhost:8080/realms/demo/protocol/openid-connect/certs
         registration:
           demo:
             provider: demo

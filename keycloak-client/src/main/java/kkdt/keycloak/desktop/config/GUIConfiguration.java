@@ -2,6 +2,7 @@ package kkdt.keycloak.desktop.config;
 
 import kkdt.keycloak.desktop.UIFrame;
 import kkdt.keycloak.desktop.UILoginPanel;
+import kkdt.keycloak.desktop.controller.ApiHandler;
 import kkdt.keycloak.desktop.controller.LoginController;
 import kkdt.keycloak.desktop.security.KeycloakAccessTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,11 @@ public class GUIConfiguration {
     private OAuth2AuthorizedClientManager authorizedClientManager;
 
     @Bean
+    public ApiHandler apiHandler(@Value("${app.host}") String host, @Value("${server.port}") int port, @Value("${server.ssl.enabled}") boolean ssl) {
+        return new ApiHandler(host, port, ssl);
+    }
+
+    @Bean
     public UILoginPanel loginPanel(@Autowired LoginController loginController) {
         return new UILoginPanel()
             .withLoginController(loginController);
@@ -52,8 +58,10 @@ public class GUIConfiguration {
     }
 
     @Bean
-    public LoginController loginController(@Autowired KeycloakAccessTokenService keycloakAccessTokenService) {
-        return new LoginController(keycloakAccessTokenService);
+    public LoginController loginController(@Autowired KeycloakAccessTokenService keycloakAccessTokenService,
+        @Autowired ApiHandler apiHandler)
+    {
+        return new LoginController(keycloakAccessTokenService, apiHandler);
     }
 
     @Bean

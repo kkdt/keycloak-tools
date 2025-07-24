@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kkdt.keycloak.desktop.UserInfo;
 import kkdt.keycloak.desktop.security.AuthenticationEvent;
+import kkdt.keycloak.desktop.security.ClientCredentials;
 import kkdt.keycloak.desktop.security.KeycloakAccessTokenService;
+import kkdt.keycloak.desktop.security.UserCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
@@ -30,10 +32,14 @@ public class LoginController implements ActionListener, ApplicationListener<Auth
 
     private Consumer<UserInfo> authenticatedUser;
     private KeycloakAccessTokenService keycloakAccessTokenService;
-    private UserInfo currentUserInfo;
+    private UserInfo currentUserInfo; // from web login
+    private ClientCredentials clientCredentials; // from manual login on GUI as a client service
+    private UserCredentials userCredentials; // from manual login on GUI as a user
+    private ApiHandler apiHandler;
 
-    public LoginController(KeycloakAccessTokenService keycloakAccessTokenService) {
+    public LoginController(KeycloakAccessTokenService keycloakAccessTokenService, ApiHandler apiHandler) {
         this.keycloakAccessTokenService = keycloakAccessTokenService;
+        this.apiHandler = apiHandler;
     }
 
     @Override
@@ -82,11 +88,17 @@ public class LoginController implements ActionListener, ApplicationListener<Auth
                         currentUserInfo,
                         keycloakAccessTokenService);
                     String clientCredentials = keycloakAccessTokenService.getClientCredentials();
-                    logger.info("Client credentials: {}", clientCredentials);
+
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    this.clientCredentials = objectMapper.readValue(clientCredentials, ClientCredentials.class);
+                    logger.info("Client credentials: {}, \n    {}", clientCredentials, clientCredentials);
                     displayResponse(clientCredentials, "Client Credentials");
                     break;
                 case "Password":
                     handleUserPasswordAction();
+                    break;
+                case "Counter":
+                    handleCounter();
                     break;
             }
         } catch (Exception e) {
@@ -125,9 +137,11 @@ public class LoginController implements ActionListener, ApplicationListener<Auth
             JOptionPane.PLAIN_MESSAGE);
         if (confirm == JOptionPane.OK_OPTION) {
             char[] _input = password.getPassword();
-            String userCredentials = keycloakAccessTokenService.getUserCredentials(input1.getText(), _input);
-            logger.info("User credentials: {}", userCredentials);
-            displayResponse(userCredentials, "User Credentials");
+            String value = keycloakAccessTokenService.getUserCredentials(input1.getText(), _input);
+            ObjectMapper objectMapper = new ObjectMapper();
+            this.userCredentials = objectMapper.readValue(value, UserCredentials.class);
+            logger.info("Client credentials: {}, \n    {}", this.userCredentials, value);
+            displayResponse(value, "User Credentials");
         }
     }
 
@@ -152,5 +166,14 @@ public class LoginController implements ActionListener, ApplicationListener<Auth
             scrollPane,
             title,
             JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void handleCounter() throws Exception {
+        String response =
+            apiHandler.invoke("/api/counter", userCredentials.getAccess_token());
+//            apiHandler.invoke(String.class, "/api/counter", HttpMethod.GET, clientCredentials);
+//            apiHandler.invoke("/api/counter", userCredentials);
+        displayResponse(response, "Endpoint: /api/counter");
+        logger.info("Counter response: {}", response);
     }
 }

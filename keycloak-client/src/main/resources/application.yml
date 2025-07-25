@@ -1,5 +1,7 @@
 app:
-  host: localhost
+  # For SSL, update /etc/hosts to point keycloak-client to 127.0.0.1 localhost.
+  # The certificate was not set up with alternative names.
+  host: keycloak-client
   title: Keycloak Desktop Client
   realm: demo
   keycloak:

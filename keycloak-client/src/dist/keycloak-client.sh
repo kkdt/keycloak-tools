@@ -46,7 +46,7 @@ while [ "$1" != "" ]; do
 
   --ssl)
     __ssl="-Dserver.ssl.enabled=true"
-    __ssl="${__ssl} -Djavax.net.ssl.keyStore=${APPHOME}/keystores/keycloak-client.p12 -Djavax.net.ssl.keyStorePassword=oassword -Djavax.net.ssl.keyStoreType=pcks12"
+    __ssl="${__ssl} -Djavax.net.ssl.keyStore=${APPHOME}/keystores/keycloak-client.p12 -Djavax.net.ssl.keyStorePassword=password -Djavax.net.ssl.keyStoreType=pkcs12"
     __ssl="${__ssl} -Djavax.net.ssl.trustStore=${APPHOME}/keystores/truststore.jks -Djavax.net.ssl.trustStorePassword=password -Djavax.net.ssl.trustStoreType=jks"
     ;;
 

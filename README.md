@@ -8,6 +8,9 @@
 
 ## Enable SSL
 
+Note: The keystore was set up with the alias `keycloak-client` without altenative names; therefore, we update /etc/hsots
+to point it to 127.0.0.1 along with localhost so the application can pick up the alias / cert when we enable SSL.
+
 1. Create SSL Certificate / private keystore
     ```
     keytool -genkeypair -alias keycloak-client -keyalg RSA -keysize 4096 -storetype PKCS12 -keystore keycloak-client.p12 -validity 3650 -storepass password

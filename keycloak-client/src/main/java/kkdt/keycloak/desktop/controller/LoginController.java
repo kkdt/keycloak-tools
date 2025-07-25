@@ -102,6 +102,7 @@ public class LoginController implements ActionListener, ApplicationListener<Auth
                     break;
             }
         } catch (Exception e) {
+            logger.error("Encountered error", e);
             JOptionPane.showMessageDialog(null,
                 "Exception: " + e.getMessage(),
                 "Error encountered",

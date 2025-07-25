@@ -7,8 +7,6 @@ import java.util.function.Consumer;
  */
 public class Counter {
     public int value;
-    public String username;
-    public String apiKey;
 
     public Counter with(Consumer<Counter> c) {
         c.accept(this);

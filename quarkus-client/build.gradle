@@ -1,0 +1,57 @@
+plugins {
+    id("io.quarkus") version "3.8.5"
+}
+
+repositories {
+    // Use Maven Central for resolving dependencies.
+    mavenCentral()
+    maven {
+        url 'https://github.com/kkdt/mavenrepo/raw/master'
+    }
+}
+
+version = "0.1"
+
+dependencies {
+    // Use JUnit test framework.
+    testImplementation libs.junit
+    // This dependency is used by the application.
+    implementation libs.guava
+
+    implementation platform("io.quarkus:quarkus-universe-bom:3.8.5")
+    implementation 'io.quarkus:quarkus-arc'
+    implementation 'io.quarkus:quarkus-resteasy'
+    testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation 'io.rest-assured:rest-assured'
+
+    implementation platform('org.springframework.boot:spring-boot-dependencies:3.4.1')
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.security:spring-security-oauth2-resource-server:5.7.1'
+    implementation 'org.springframework.security:spring-security-oauth2-jose'
+    implementation 'org.springframework.security:spring-security-config'
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.81'
+
+    implementation("kkdt.generictable:swing-generictable:1.0")
+}
+
+// Apply a specific Java toolchain to ease working on different environments.
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+task bundle(type: Zip) {
+    archiveFileName = "${project.name}-${project.version}.zip"
+    destinationDirectory = file("${projectDir}/build/distributions")
+    into("${project.name}-${project.version}") {
+        from("${projectDir}/build/quarkus-app")
+        from("${projectDir}/src/dist")
+        include("**/*")
+    }
+}
+bundle.dependsOn build

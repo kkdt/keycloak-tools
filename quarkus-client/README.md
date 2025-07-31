@@ -1,0 +1,1 @@
+https://mkyong.com/quarkus/gradle-quarkus-hello-world-example/

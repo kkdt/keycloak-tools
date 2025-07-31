@@ -12,3 +12,4 @@ plugins {
 
 rootProject.name = 'keycloak-tools'
 include('keycloak-client')
+include('quarkus-client')

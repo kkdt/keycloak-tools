@@ -1,0 +1,4 @@
+quarkus:
+  native:
+    container-build: true
+    builder-image: graalvm

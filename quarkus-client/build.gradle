@@ -45,7 +45,7 @@ java {
     }
 }
 
-task bundle(type: Zip) {
+task dist(type: Zip) {
     archiveFileName = "${project.name}-${project.version}.zip"
     destinationDirectory = file("${projectDir}/build/distributions")
     into("${project.name}-${project.version}") {
@@ -53,5 +53,8 @@ task bundle(type: Zip) {
         from("${projectDir}/src/dist")
         include("**/*")
     }
+    doLast {
+        println "Distribution zip file created"
+    }
 }
-bundle.dependsOn build
+dist.dependsOn build

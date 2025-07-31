@@ -26,13 +26,13 @@ dependencies {
     // This dependency is used by the application.
     implementation libs.guava
 
-    implementation platform('org.springframework.boot:spring-boot-dependencies:2.7.18')
+    implementation platform('org.springframework.boot:spring-boot-dependencies:3.4.1')
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'org.springframework.security:spring-security-oauth2-resource-server'
+    implementation 'org.springframework.security:spring-security-oauth2-resource-server:5.7.1'
     implementation 'org.springframework.security:spring-security-oauth2-jose'
     implementation 'org.springframework.security:spring-security-config'
     implementation 'org.bouncycastle:bcprov-jdk18on:1.81'
@@ -62,7 +62,7 @@ jar {
             "Specification-Title": "keycloak-desktop-client",
             "Specification-Version": version,
             "Specification-Vendor": "kkdt",
-            "Implementation-Title": "Keycloack Desktop Client",
+            "Implementation-Title": "Keycloak Desktop Client",
             "Implementation-Version": version,
             "Implementation-Vendor": "kkdt.github.io"
         )

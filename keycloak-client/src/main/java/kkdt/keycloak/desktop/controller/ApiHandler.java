@@ -2,7 +2,6 @@ package kkdt.keycloak.desktop.controller;
 
 import kkdt.keycloak.desktop.security.ClientCredentials;
 import kkdt.keycloak.desktop.security.UserCredentials;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -14,7 +13,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.Charset;
 
 public class ApiHandler {
     private final String host;
@@ -84,8 +82,6 @@ public class ApiHandler {
 
     private HttpHeaders createHeaders(String type, String token) {
         return new HttpHeaders() {{
-            byte[] encodedAuth = Base64.encodeBase64(
-                token.getBytes(Charset.forName("US-ASCII")) );
             String authHeader = String.format("%s %s", type, token);
             set( "Authorization", authHeader );
         }};
